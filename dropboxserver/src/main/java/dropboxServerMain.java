@@ -12,6 +12,7 @@ public class dropboxServerMain {
 
     public void run() throws Exception {
         final int serverPort = 8189;
+        final String host = "localhost";
         // создаем 2 пула потоков
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -29,7 +30,7 @@ public class dropboxServerMain {
                                     new MainHandler()); // при инициализации канала создаем хэндлеры
                         }
                     });
-            ChannelFuture f = b.bind(serverPort).sync();
+            ChannelFuture f = b.bind(host, serverPort).sync();
             System.out.println("Server started on port " + serverPort);
             f.channel().closeFuture().sync();
         } finally {
