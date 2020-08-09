@@ -6,8 +6,8 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropboxGUI">
       <ListView fx:id="lv_client" layoutX="14.0" layoutY="44.0" prefHeight="312.0" prefWidth="273.0" />
       <ListView fx:id="lv_server" layoutX="308.0" layoutY="44.0" prefHeight="312.0" prefWidth="273.0" />
-      <Button fx:id="bnt_disconnect" layoutX="450.0" layoutY="14.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="131.0" text="Disconnect" />
-      <Button fx:id="bnt_connect" layoutX="308.0" layoutY="14.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="131.0" text="Connect" />
+      <Button fx:id="bnt_disconnect" onAction="#disconnect" layoutX="450.0" layoutY="14.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="131.0" text="Disconnect" />
+      <Button fx:id="bnt_connect" onAction="#connect" layoutX="308.0" layoutY="14.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="131.0" text="Connect" />
       <TextField fx:id="txt_fn" layoutX="14.0" layoutY="362.0" prefHeight="24.0" prefWidth="273.0" promptText="File Name" />
       <Button fx:id="bnt_download" onAction="#download" layoutX="308.0" layoutY="362.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="131.0" text="Download" />
       <Button fx:id="bnt_upload" onAction="#upload" layoutX="450.0" layoutY="362.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="131.0" text="Upload" />

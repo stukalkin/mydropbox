@@ -1,3 +1,4 @@
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.serialization.ObjectDecoderInputStream;
 import io.netty.handler.codec.serialization.ObjectEncoderOutputStream;
 import javafx.event.ActionEvent;
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class DropboxGUI implements Initializable {
@@ -21,7 +23,7 @@ public class DropboxGUI implements Initializable {
     public Button bnt_upload;
     public TextField txt_login;
     public TextField txt_password;
-    final String clientRootPath = ".";
+    final String clientRootPath = "./ClientDir";
     private Socket socket;
 
     @Override
@@ -39,11 +41,21 @@ public class DropboxGUI implements Initializable {
         }
     }
 
-    public void download(ActionEvent actionEvent) {
-        String command = txt_fn.getText();
+    public void download(ActionEvent actionEvent) throws IOException {
     }
 
-    public void upload(ActionEvent actionEvent) {
+    public void upload(ActionEvent actionEvent) throws IOException {
         String command = txt_fn.getText();
+        if (!(command.equals(""))){
+            CommandMessage cm = new CommandMessage(Paths.get(clientRootPath + "/" + command));
+            ByteBuf buf = null;
+            //buf.writeBytes(cm);
+        } else {System.out.println("Enter file name");}
+    }
+
+    public void disconnect(ActionEvent actionEvent) throws IOException {
+    }
+
+    public void connect(ActionEvent actionEvent) {
     }
 }
