@@ -29,15 +29,6 @@ public class DropboxGUI implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            Socket socket = new Socket("localhost", 8189);
-            out = new ObjectEncoderOutputStream(socket.getOutputStream());
-            in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        update_lv("client");
-        update_lv("server");
     }
 
     public void download() throws IOException, ClassNotFoundException {  // скачивание с сервера
@@ -46,13 +37,14 @@ public class DropboxGUI implements Initializable {
             RequestMessage rm = new RequestMessage(command);
             out.writeObject(rm);
         } else {System.out.println("Enter file name to download");}
-        if (in.readObject() instanceof CommandMessage) {
+        // и вот тут мы зависаем напрочь, причем даже если строка ввода была пустая
+        if (in.readObject() instanceof CommandMessage) { // если приходит сообщение с файлом
             CommandMessage cm = (CommandMessage) in.readObject();
-                    File file = new File(clientRootPath + "/" + cm.getFilename());
+            File file = new File(clientRootPath + "/" + cm.getFilename());
             if (!file.exists()) {
                 Files.write(Paths.get(file.getPath()), cm.getBytes());
             } else System.out.println("File exists");
-        } else if (in.readObject() instanceof infoMessage) {
+        } else if (in.readObject() instanceof infoMessage) { // если приходит сообщение с инфой
             infoMessage im = (infoMessage) in.readObject();
             txt_fn.setText("Server answer: " + im.getMessage());
         }
@@ -72,6 +64,15 @@ public class DropboxGUI implements Initializable {
     }
 
     public void connect() {
+        try {
+            Socket socket = new Socket("localhost", 8189);
+            out = new ObjectEncoderOutputStream(socket.getOutputStream());
+            in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        update_lv("client");
+        update_lv("server");
     }
 
     public void update_lv (String clientOrServer) { //метод обновления полей файлов на стороне клиента и сервера
@@ -82,7 +83,7 @@ public class DropboxGUI implements Initializable {
                 lv_client.getItems().add(file);
             }}
         else if (clientOrServer.equals("server")) {
-            File dir = new File("./ServerDir");
+            File dir = new File("./ServerDir");  //опять хардкод папки сервера
             lv_server.getItems().clear();
             for (String file : Objects.requireNonNull(dir.list())) {
                 lv_server.getItems().add(file);
