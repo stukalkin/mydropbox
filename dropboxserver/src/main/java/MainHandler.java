@@ -35,8 +35,16 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
             if (!file.exists()) {
                 Files.write(Paths.get(file.getPath()), cm.getBytes());
             } else System.out.println("File exists");
-        } else if (msg instanceof RequestMessage) {
-            // TODO: 05.08.2020  
+        } else if (msg instanceof RequestMessage) { // запрос на отправку файла
+            RequestMessage rm = (RequestMessage) msg;
+            File file = new File("./ServerDir/" + rm.getFilename());
+            if (!file.exists()) {
+                infoMessage im = new infoMessage("File not exist");
+                ctx.writeAndFlush(im);
+            } else {
+                CommandMessage cm = new CommandMessage(Paths.get(file.getPath()));
+                ctx.writeAndFlush(cm);
+            }
         }
     }
 }
