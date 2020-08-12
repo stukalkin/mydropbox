@@ -25,13 +25,15 @@ public class DropboxGUI implements Initializable {
     public TextField txt_password;
     final String clientRootPath = "./ClientDir";
     private Socket socket;
+    public ObjectEncoderOutputStream out;
+    public ObjectDecoderInputStream in;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
             socket = new Socket("localhost", 8189);
-            ObjectEncoderOutputStream out = new ObjectEncoderOutputStream(socket.getOutputStream());
-            ObjectDecoderInputStream in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
+            out = new ObjectEncoderOutputStream(socket.getOutputStream());
+            in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,8 +50,7 @@ public class DropboxGUI implements Initializable {
         String command = txt_fn.getText();
         if (!(command.equals(""))){
             CommandMessage cm = new CommandMessage(Paths.get(clientRootPath + "/" + command));
-            ByteBuf buf = null;
-            //buf.writeBytes(cm);
+            out.writeObject(cm);
         } else {System.out.println("Enter file name");}
     }
 
