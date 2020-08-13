@@ -26,6 +26,7 @@ public class DropboxGUI implements Initializable {
     final String clientRootPath = "./ClientDir";
     public ObjectEncoderOutputStream out;
     public ObjectDecoderInputStream in;
+    public Socket socket;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -60,19 +61,22 @@ public class DropboxGUI implements Initializable {
         update_lv("server");
     }
 
-    public void disconnect() {
+    public void disconnect() throws IOException {
+            socket.getInputStream().close();
+            socket.getOutputStream().close();
+            socket.close();
     }
 
     public void connect() {
-        try {
-            Socket socket = new Socket("localhost", 8189);
-            out = new ObjectEncoderOutputStream(socket.getOutputStream());
-            in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        update_lv("client");
-        update_lv("server");
+            try {
+                socket = new Socket("localhost", 8189);
+                out = new ObjectEncoderOutputStream(socket.getOutputStream());
+                in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            update_lv("client");
+            update_lv("server");
     }
 
     public void update_lv (String clientOrServer) { //метод обновления полей файлов на стороне клиента и сервера
