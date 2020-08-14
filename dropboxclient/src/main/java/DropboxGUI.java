@@ -23,6 +23,7 @@ public class DropboxGUI implements Initializable {
     public Button bnt_upload;
     public TextField txt_login;
     public TextField txt_password;
+    public TextField txt_comment;
     final String clientRootPath = "./ClientDir";
     public ObjectEncoderOutputStream out;
     public ObjectDecoderInputStream in;
@@ -35,19 +36,18 @@ public class DropboxGUI implements Initializable {
     public void download() throws IOException, ClassNotFoundException {  // скачивание с сервера
         String command = txt_fn.getText();
         if (!(command.equals(""))){
-            RequestMessage rm = new RequestMessage(command);
-            out.writeObject(rm);
+            CommandMessage cm = new CommandMessage(command);
+            out.writeObject(cm);
         } else {System.out.println("Enter file name to download");}
         // и вот тут мы зависаем напрочь, причем даже если строка ввода была пустая
-        if (in.readObject() instanceof CommandMessage) { // если приходит сообщение с файлом
-            CommandMessage cm = (CommandMessage) in.readObject();
+        CommandMessage cm = (CommandMessage) in.readObject();  // если приходит сообщение с файлом
+        if (cm.getParametr() == CommandMessage.Parametr.File) {
             File file = new File(clientRootPath + "/" + cm.getFilename());
             if (!file.exists()) {
                 Files.write(Paths.get(file.getPath()), cm.getBytes());
-            } else System.out.println("File exists");
-        } else if (in.readObject() instanceof infoMessage) { // если приходит сообщение с инфой
-            infoMessage im = (infoMessage) in.readObject();
-            txt_fn.setText("Server answer: " + im.getMessage());
+            } else txt_comment.setText("File exists");
+        } else if (cm.getParametr() == CommandMessage.Parametr.Info) {
+            txt_comment.setText("Server answer: " + cm.getFilename());
         }
         update_lv("client");
     }
@@ -57,7 +57,7 @@ public class DropboxGUI implements Initializable {
         if (!(command.equals(""))){
             CommandMessage cm = new CommandMessage(Paths.get(clientRootPath + "/" + command));
             out.writeObject(cm);
-        } else {System.out.println("Enter file name to upload");}
+        } else {txt_comment.setText("Enter file name to upload");}
         update_lv("server");
     }
 

@@ -10,7 +10,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
     final String serverRootPath = "./ServerDir";
 
     @Override
-    public void channelActive(ChannelHandlerContext channelHandlerContext) throws IOException {
+    public void channelActive(ChannelHandlerContext channelHandlerContext){
         File file = new File(serverRootPath);
         if (!file.exists()) {
             file.mkdir();
@@ -30,21 +30,20 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws IOException {
-        if (msg instanceof CommandMessage) { // запрос на создание файла на сервере
-            File file = new File(serverRootPath + "/" + ((CommandMessage) msg).getFilename());
-            CommandMessage cm = (CommandMessage) msg;
-            if (!file.exists()) {
-                Files.write(Paths.get(file.getPath()), cm.getBytes());
-            } else System.out.println("File exists");
-        } else if (msg instanceof RequestMessage) { // запрос на отправку файла
-            RequestMessage rm = (RequestMessage) msg;
-            File file = new File(serverRootPath + "/" + rm.getFilename());
-            if (!file.exists()) {
-                infoMessage im = new infoMessage("File not exist");
-                ctx.writeAndFlush(im);
-            } else {
-                CommandMessage cm = new CommandMessage(Paths.get(file.getPath()));
-                ctx.writeAndFlush(cm);
+        CommandMessage cm = (CommandMessage) msg; // прилетело сообщение
+        if (cm.getParametr() == CommandMessage.Parametr.File) { // если прилетел файл
+            File file = new File(serverRootPath + "/" + cm.getFilename()); //создаем файл
+            if (!file.exists()) { //если такой не существует
+                Files.write(Paths.get(file.getPath()), cm.getBytes()); // то создаем файл и в него кидаем байты
+            } else System.out.println("File exists"); // если файл есть, то выйдет сообщение
+        } else if (cm.getParametr() == CommandMessage.Parametr.Info) { // но если прилетело инфо
+            File file = new File(serverRootPath + "/" + cm.getFilename()); // создаем файл с новым путем
+            if (!file.exists()) { // если не существует такой файл
+                CommandMessage сmOut = new CommandMessage("File not exist"); //то посылаем сообщение клиенту
+                ctx.writeAndFlush(сmOut); // вот тут посылаем
+            } else { //ну а если есть
+                CommandMessage сmOut = new CommandMessage(Paths.get(file.getPath())); //то посылаем байты
+                ctx.writeAndFlush(сmOut);
             }
         }
     }
