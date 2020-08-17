@@ -5,9 +5,10 @@ import java.nio.file.Path;
 
 class CommandMessage extends AbstractMessage {
     public enum Parametr {
-        Info, File
+        Info, File, Auth
     }
     private String filename;
+    private String fileSecondname;
     private byte[] bytes;
     public Parametr param;
 
@@ -15,6 +16,10 @@ class CommandMessage extends AbstractMessage {
 
     public String getFilename() {
         return filename;
+    }
+
+    public String getFileSecondname() {
+        return fileSecondname;
     }
 
     public byte[] getBytes() {
@@ -30,5 +35,11 @@ class CommandMessage extends AbstractMessage {
     public CommandMessage (String string) {
         param = Parametr.Info;
         filename = string;
+    }
+
+    public CommandMessage (String login, String password) {
+        param = Parametr.Auth;
+        filename = login;
+        fileSecondname = password;
     }
 }

@@ -80,13 +80,15 @@ public class DropboxGUI implements Initializable {
     public void connect() throws IOException, InterruptedException, ClassNotFoundException {
         String login = txt_login.getText();
         String password = txt_password.getText();
-        AuthorizationMessage am = new AuthorizationMessage(login, password);
+        CommandMessage am = new CommandMessage(login, password);
         out.writeObject(am);
         Thread.sleep(100);
         CommandMessage cm = (CommandMessage) in.readObject();
-
-        update_lv("client");
-        update_lv("server");
+        if (cm.getFilename().equals("Access granted")) {
+            txt_comment.setText("Server answer: " + cm.getFilename());
+            update_lv("client");
+            update_lv("server");
+        } else {txt_comment.setText("Server answer: poshel naher");}
     }
 
     public void update_lv (String clientOrServer) { //метод обновления полей файлов на стороне клиента и сервера
