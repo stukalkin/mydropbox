@@ -14,12 +14,12 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
         File file = new File(serverRootPath);
         if (!file.exists()) {
             file.mkdir();
-        }System.out.println("Client connected");
+        }System.out.println("Connection established");
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext channelHandlerContext) {
-        System.out.println("Client disconnected");
+        System.out.println("Disconnected");
     }
 
     @Override

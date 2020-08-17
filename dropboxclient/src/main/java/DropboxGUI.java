@@ -31,52 +31,62 @@ public class DropboxGUI implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            socket = new Socket("localhost", 8189);
+            out = new ObjectEncoderOutputStream(socket.getOutputStream());
+            in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void download() throws IOException, ClassNotFoundException {  // скачивание с сервера
+    public void download() throws IOException, ClassNotFoundException, InterruptedException {  // скачивание с сервера
         String command = txt_fn.getText();
         if (!(command.equals(""))){
             CommandMessage cm = new CommandMessage(command);
             out.writeObject(cm);
-        } else {System.out.println("Enter file name to download");}
+        } else {txt_comment.setText("Enter file name to download");}
         // и вот тут мы зависаем напрочь, причем даже если строка ввода была пустая
         CommandMessage cm = (CommandMessage) in.readObject();  // если приходит сообщение с файлом
         if (cm.getParametr() == CommandMessage.Parametr.File) {
             File file = new File(clientRootPath + "/" + cm.getFilename());
             if (!file.exists()) {
                 Files.write(Paths.get(file.getPath()), cm.getBytes());
+                Thread.sleep(100);
+                update_lv("client");
             } else txt_comment.setText("File exists");
-        } else if (cm.getParametr() == CommandMessage.Parametr.Info) {
+        } else if (cm.getParametr() == CommandMessage.Parametr.Info) { // если приходит сообщение с текстом
             txt_comment.setText("Server answer: " + cm.getFilename());
         }
         update_lv("client");
     }
 
-    public void upload() throws IOException { // загрузка на сервер
+    public void upload() throws IOException, InterruptedException { // загрузка на сервер
         String command = txt_fn.getText();
         if (!(command.equals(""))){
             CommandMessage cm = new CommandMessage(Paths.get(clientRootPath + "/" + command));
             out.writeObject(cm);
+            Thread.sleep(100);
+            update_lv("server");
         } else {txt_comment.setText("Enter file name to upload");}
-        update_lv("server");
     }
 
     public void disconnect() throws IOException {
-            socket.getInputStream().close();
-            socket.getOutputStream().close();
-            socket.close();
+        socket.getInputStream().close();
+        socket.getOutputStream().close();
+        socket.close();
     }
 
-    public void connect() {
-            try {
-                socket = new Socket("localhost", 8189);
-                out = new ObjectEncoderOutputStream(socket.getOutputStream());
-                in = new ObjectDecoderInputStream(socket.getInputStream(), 1000 * 1024 * 1024);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            update_lv("client");
-            update_lv("server");
+    public void connect() throws IOException, InterruptedException, ClassNotFoundException {
+        String login = txt_login.getText();
+        String password = txt_password.getText();
+        AuthorizationMessage am = new AuthorizationMessage(login, password);
+        out.writeObject(am);
+        Thread.sleep(100);
+        CommandMessage cm = (CommandMessage) in.readObject();
+
+        update_lv("client");
+        update_lv("server");
     }
 
     public void update_lv (String clientOrServer) { //метод обновления полей файлов на стороне клиента и сервера
