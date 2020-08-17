@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropboxGUI">
+      <ListView fx:id="lv_client" layoutX="14.0" layoutY="44.0" prefHeight="312.0" prefWidth="273.0" />
+      <ListView fx:id="lv_server" layoutX="308.0" layoutY="44.0" prefHeight="312.0" prefWidth="273.0" />
+      <Button fx:id="bnt_disconnect" layoutX="450.0" layoutY="14.0" mnemonicParsing="false" onAction="#disconnect" prefHeight="24.0" prefWidth="131.0" text="Disconnect" />
+      <Button fx:id="bnt_connect" layoutX="308.0" layoutY="14.0" mnemonicParsing="false" onAction="#connect" prefHeight="24.0" prefWidth="131.0" text="Connect" />
+      <TextField fx:id="txt_fn" layoutX="14.0" layoutY="362.0" prefHeight="24.0" prefWidth="273.0" promptText="Enter File Name" />
+      <Button fx:id="bnt_download" layoutX="308.0" layoutY="362.0" mnemonicParsing="false" onAction="#download" prefHeight="24.0" prefWidth="131.0" text="Download" />
+      <Button fx:id="bnt_upload" layoutX="450.0" layoutY="362.0" mnemonicParsing="false" onAction="#upload" prefHeight="24.0" prefWidth="131.0" text="Upload" />
+      <TextField fx:id="txt_login" layoutX="14.0" layoutY="14.0" prefHeight="24.0" prefWidth="131.0" promptText="Login" />
+      <TextField fx:id="txt_password" layoutX="156.0" layoutY="14.0" prefHeight="24.0" prefWidth="131.0" promptText="Password" />
+</AnchorPane>
