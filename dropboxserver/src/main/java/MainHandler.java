@@ -53,13 +53,19 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
                     ctx.writeAndFlush(сmOut);
                 }
             } else if (cm.getParametr() == CommandMessage.Parametr.Auth) {
+                String stringKey;
+                String stringValue;
                 for (Map.Entry entry : loginPassword.entrySet()) {
-                    if (entry.getKey() == cm.getFilename() && entry.getValue() == cm.getFileSecondname()) {
+                    stringKey = (String) entry.getKey();
+                    stringValue = (String) entry.getValue();
+                    if (stringKey.equals(cm.getFilename()) && stringValue.equals(cm.getFileSecondname())) {
                         CommandMessage сmOut = new CommandMessage("Access granted");
                         ctx.writeAndFlush(сmOut);
                         break;
                     }
                 }
+                CommandMessage сmOut = new CommandMessage("NO");
+                ctx.writeAndFlush(сmOut);
             }
         }
     }

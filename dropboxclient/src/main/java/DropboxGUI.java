@@ -40,20 +40,17 @@ public class DropboxGUI implements Initializable {
         }
     }
 
-    public void download() throws IOException, ClassNotFoundException, InterruptedException {  // скачивание с сервера
+    public void download() throws IOException, ClassNotFoundException {  // скачивание с сервера
         String command = txt_fn.getText();
         if (!(command.equals(""))){
             CommandMessage cm = new CommandMessage(command);
             out.writeObject(cm);
         } else {txt_comment.setText("Enter file name to download");}
-        // и вот тут мы зависаем напрочь, причем даже если строка ввода была пустая
         CommandMessage cm = (CommandMessage) in.readObject();  // если приходит сообщение с файлом
         if (cm.getParametr() == CommandMessage.Parametr.File) {
             File file = new File(clientRootPath + "/" + cm.getFilename());
             if (!file.exists()) {
                 Files.write(Paths.get(file.getPath()), cm.getBytes());
-                Thread.sleep(100);
-                update_lv("client");
             } else txt_comment.setText("File exists");
         } else if (cm.getParametr() == CommandMessage.Parametr.Info) { // если приходит сообщение с текстом
             txt_comment.setText("Server answer: " + cm.getFilename());
@@ -61,14 +58,13 @@ public class DropboxGUI implements Initializable {
         update_lv("client");
     }
 
-    public void upload() throws IOException, InterruptedException { // загрузка на сервер
+    public void upload() throws IOException { // загрузка на сервер
         String command = txt_fn.getText();
         if (!(command.equals(""))){
             CommandMessage cm = new CommandMessage(Paths.get(clientRootPath + "/" + command));
             out.writeObject(cm);
-            Thread.sleep(100);
-            update_lv("server");
         } else {txt_comment.setText("Enter file name to upload");}
+        update_lv("server");
     }
 
     public void disconnect() throws IOException {
@@ -77,18 +73,17 @@ public class DropboxGUI implements Initializable {
         socket.close();
     }
 
-    public void connect() throws IOException, InterruptedException, ClassNotFoundException {
+    public void connect() throws IOException, ClassNotFoundException {
         String login = txt_login.getText();
         String password = txt_password.getText();
         CommandMessage am = new CommandMessage(login, password);
         out.writeObject(am);
-        Thread.sleep(100);
         CommandMessage cm = (CommandMessage) in.readObject();
         if (cm.getFilename().equals("Access granted")) {
             txt_comment.setText("Server answer: " + cm.getFilename());
             update_lv("client");
             update_lv("server");
-        } else {txt_comment.setText("Server answer: poshel naher");}
+        } else {txt_comment.setText("Server answer: " + cm.getFilename());}
     }
 
     public void update_lv (String clientOrServer) { //метод обновления полей файлов на стороне клиента и сервера
@@ -99,7 +94,7 @@ public class DropboxGUI implements Initializable {
                 lv_client.getItems().add(file);
             }}
         else if (clientOrServer.equals("server")) {
-            File dir = new File("./ServerDir");  //опять хардкод папки сервера
+            File dir = new File("./ServerDir");
             lv_server.getItems().clear();
             for (String file : Objects.requireNonNull(dir.list())) {
                 lv_server.getItems().add(file);
