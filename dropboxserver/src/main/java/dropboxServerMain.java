@@ -27,7 +27,7 @@ public class dropboxServerMain {
                             ch.pipeline().addLast(
                                     new ObjectDecoder(1000 * 1024 * 1024, ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
-                                    new MainHandler()); // при инициализации канала создаем хэндлеры
+                                    new MainHandler()); // при инициализации канала создаем хэндлер
                         }
                     });
             ChannelFuture f = b.bind(host, serverPort).sync();

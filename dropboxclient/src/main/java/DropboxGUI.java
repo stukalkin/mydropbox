@@ -40,24 +40,26 @@ public class DropboxGUI implements Initializable {
         }
     }
 
-    public void download() throws IOException, ClassNotFoundException {  // скачивание с сервера
+    //скачиваем с сервера при нажатии на кнопку
+    public void download() throws IOException, ClassNotFoundException {
         String command = txt_fn.getText();
         if (!(command.equals(""))){
             CommandMessage cm = new CommandMessage(command);
             out.writeObject(cm);
         } else {txt_comment.setText("Enter file name to download");}
-        CommandMessage cm = (CommandMessage) in.readObject();  // если приходит сообщение с файлом
+        CommandMessage cm = (CommandMessage) in.readObject();
         if (cm.getParametr() == CommandMessage.Parametr.File) {
             File file = new File(clientRootPath + "/" + cm.getFilename());
             if (!file.exists()) {
                 Files.write(Paths.get(file.getPath()), cm.getBytes());
             } else txt_comment.setText("File exists");
-        } else if (cm.getParametr() == CommandMessage.Parametr.Info) { // если приходит сообщение с текстом
+        } else if (cm.getParametr() == CommandMessage.Parametr.Info) {
             txt_comment.setText("Server answer: " + cm.getFilename());
         }
         update_lv("client");
     }
 
+    //закачка на сервер при нажатии на кнопку
     public void upload() throws IOException { // загрузка на сервер
         String command = txt_fn.getText();
         if (!(command.equals(""))){
@@ -67,12 +69,14 @@ public class DropboxGUI implements Initializable {
         update_lv("server");
     }
 
+    //отключаемся от сервера
     public void disconnect() throws IOException {
         socket.getInputStream().close();
         socket.getOutputStream().close();
         socket.close();
     }
 
+    //авторизация
     public void connect() throws IOException, ClassNotFoundException {
         String login = txt_login.getText();
         String password = txt_password.getText();
@@ -86,7 +90,8 @@ public class DropboxGUI implements Initializable {
         } else {txt_comment.setText("Server answer: " + cm.getFilename());}
     }
 
-    public void update_lv (String clientOrServer) { //метод обновления полей файлов на стороне клиента и сервера
+    //обновление полей клиентского интерфейса
+    public void update_lv (String clientOrServer) {
         if (clientOrServer.equals("client")) {
             File dir = new File(clientRootPath);
             lv_client.getItems().clear();
